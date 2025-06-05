@@ -6,6 +6,10 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Status: Active](https://img.shields.io/badge/Status-Active-brightgreen.svg)](https://github.com/your-username/Flight-ticket-simulator)
 
+## screenshort
+![App Screenshot](./screenshot.png) <!-- Add actual screenshot -->
+---
+
 > **Your virtual travel agent** - A comprehensive flight booking system with real-time availability checks and booking management!
 
 ## 🌍 Key Features
