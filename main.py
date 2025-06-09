@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext, PhotoImage
+from tkinter import ttk, messagebox, scrolledtext
 import random
 import hashlib
 import json
@@ -14,14 +14,17 @@ class FlightBookingSystem:
         self.root = root
         self.root.title("SkyWings Flight Booking System")
         self.root.geometry("1200x700")
-        self.root.configure(bg="#f0f8ff")
+        self.root.configure(bg="#ffffff")  # Pure white background
         self.root.resizable(True, True)
         
-        # Set application icon
-        try:
-            self.root.iconbitmap("flight_icon.ico")
-        except:
-            pass
+        # Color palette
+        self.primary_color = "#005f87"    # Deep sky blue
+        self.secondary_color = "#e1f5fe"  # Very light blue
+        self.accent_color = "#ff5722"     # Vibrant orange
+        self.text_color = "#333333"       # Dark gray
+        self.light_text = "#ffffff"       # White
+        self.success_color = "#4caf50"    # Green
+        self.error_color = "#f44336"      # Red
         
         # Current user information
         self.current_user = None
@@ -55,8 +58,45 @@ class FlightBookingSystem:
         # Load aircraft images
         self.load_aircraft_images()
         
+        # Configure styles
+        self.configure_styles()
+        
         # Create GUI
         self.create_main_frame()
+
+    def configure_styles(self):
+        """Configure widget styles for consistent appearance"""
+        style = ttk.Style()
+        
+        # Treeview style (flight table)
+        style.configure("Treeview",
+                      background="#ffffff",
+                      foreground=self.text_color,
+                      fieldbackground="#ffffff",
+                      font=("Arial", 10))
+        style.configure("Treeview.Heading",
+                      font=("Arial", 10, "bold"),
+                      background=self.primary_color,
+                      foreground=self.light_text)
+        style.map("Treeview",
+                background=[('selected', self.primary_color)])
+        
+        # Button styles
+        style.configure("TButton",
+                      font=("Arial", 11),
+                      padding=6,
+                      background=self.primary_color,
+                      foreground=self.light_text)
+        style.map("TButton",
+                background=[('active', self.accent_color)])
+        
+        # Label styles
+        style.configure("Header.TLabel",
+                      font=("Arial", 16, "bold"),
+                      foreground=self.primary_color)
+        style.configure("Subheader.TLabel",
+                      font=("Arial", 12),
+                      foreground=self.text_color)
 
     def load_aircraft_images(self):
         """Load aircraft images from online sources"""
@@ -76,7 +116,7 @@ class FlightBookingSystem:
                 self.aircraft_images.append(photo)
             except:
                 # Fallback to a simple rectangle if image loading fails
-                img = Image.new('RGB', (300, 150), color="#add8e6")
+                img = Image.new('RGB', (300, 150), color=self.secondary_color)
                 photo = ImageTk.PhotoImage(img)
                 self.aircraft_images.append(photo)
 
@@ -107,50 +147,55 @@ class FlightBookingSystem:
         """Hash password using SHA-256"""
         return hashlib.sha256(password.encode()).hexdigest()
 
+    def clear_frame(self):
+        """Clear all widgets from the root frame"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+
     def create_main_frame(self):
         """Create the main application frame"""
         self.clear_frame()
         
         # Create header frame
-        header_frame = tk.Frame(self.root, bg="#1e3d6d", height=100)
+        header_frame = tk.Frame(self.root, bg=self.primary_color, height=100)
         header_frame.pack(fill="x")
         
         title = tk.Label(header_frame, text="SKYWINGS FLIGHT BOOKING SYSTEM", 
-                        font=("Arial", 24, "bold"), fg="white", bg="#1e3d6d")
+                        font=("Arial", 24, "bold"), fg=self.light_text, bg=self.primary_color)
         title.pack(pady=30)
         
         # Create content frame
-        content_frame = tk.Frame(self.root, bg="#f0f8ff")
+        content_frame = tk.Frame(self.root, bg=self.secondary_color)
         content_frame.pack(fill="both", expand=True, padx=40, pady=20)
         
         # Left side - Welcome and buttons
-        left_frame = tk.Frame(content_frame, bg="#f0f8ff")
+        left_frame = tk.Frame(content_frame, bg=self.secondary_color)
         left_frame.pack(side="left", fill="y", padx=(0, 30))
         
         welcome_label = tk.Label(left_frame, text="Welcome to SkyWings Airlines", 
-                               font=("Arial", 18, "bold"), bg="#f0f8ff", fg="#1e3d6d")
+                               font=("Arial", 18, "bold"), bg=self.secondary_color, fg=self.primary_color)
         welcome_label.pack(pady=20)
         
         desc_text = "Book flights to destinations worldwide with our premium service. " \
                    "Enjoy comfortable seating, gourmet meals, and exceptional service."
         desc_label = tk.Label(left_frame, text=desc_text, wraplength=300, 
-                            font=("Arial", 11), bg="#f0f8ff", fg="#333333", justify="left")
+                            font=("Arial", 11), bg=self.secondary_color, fg=self.text_color, justify="left")
         desc_label.pack(pady=10)
         
         # Aircraft image display
-        aircraft_frame = tk.Frame(left_frame, bg="#f0f8ff")
+        aircraft_frame = tk.Frame(left_frame, bg=self.secondary_color)
         aircraft_frame.pack(pady=20)
         if self.aircraft_images:
-            aircraft_label = tk.Label(aircraft_frame, image=self.aircraft_images[0], bg="#f0f8ff")
+            aircraft_label = tk.Label(aircraft_frame, image=self.aircraft_images[0], bg=self.secondary_color)
             aircraft_label.image = self.aircraft_images[0]  # Keep reference
             aircraft_label.pack()
         
         # Create buttons
-        btn_frame = tk.Frame(left_frame, bg="#f0f8ff")
+        btn_frame = tk.Frame(left_frame, bg=self.secondary_color)
         btn_frame.pack(pady=20)
         
         button_style = {"font": ("Arial", 12), "width": 20, "height": 2, 
-                        "bg": "#1e3d6d", "fg": "white", "bd": 0}
+                        "bg": self.primary_color, "fg": self.light_text, "bd": 0}
         
         if not self.current_user:
             register_btn = tk.Button(btn_frame, text="Create Account", 
@@ -178,7 +223,7 @@ class FlightBookingSystem:
         right_frame.pack(side="right", fill="both", expand=True)
         
         info_label = tk.Label(right_frame, text="Available Flights", 
-                            font=("Arial", 16, "bold"), bg="white", fg="#1e3d6d")
+                            font=("Arial", 16, "bold"), bg="white", fg=self.primary_color)
         info_label.pack(pady=15)
         
         # Create flight info table
@@ -231,30 +276,25 @@ class FlightBookingSystem:
             tk.Label(stat_frame, text=label, font=("Arial", 10), 
                    bg="white", fg="#666666").pack()
             tk.Label(stat_frame, text=value, font=("Arial", 14, "bold"), 
-                   bg="white", fg="#1e3d6d").pack()
+                   bg="white", fg=self.primary_color).pack()
         
         # Footer
         footer = tk.Label(self.root, text="© 2023 SkyWings Airlines. All rights reserved.", 
-                         font=("Arial", 9), bg="#1e3d6d", fg="white")
+                         font=("Arial", 9), bg=self.primary_color, fg=self.light_text)
         footer.pack(side="bottom", fill="x", pady=10)
-
-    def clear_frame(self):
-        """Clear all widgets from the root frame"""
-        for widget in self.root.winfo_children():
-            widget.destroy()
 
     def show_register(self):
         """Show registration form"""
         self.clear_frame()
         
         # Header
-        header = tk.Frame(self.root, bg="#1e3d6d", height=80)
+        header = tk.Frame(self.root, bg=self.primary_color, height=80)
         header.pack(fill="x")
         tk.Label(header, text="Create New Account", font=("Arial", 20, "bold"), 
-               fg="white", bg="#1e3d6d").pack(pady=20)
+               fg=self.light_text, bg=self.primary_color).pack(pady=20)
         
         # Content
-        content = tk.Frame(self.root, bg="#f0f8ff")
+        content = tk.Frame(self.root, bg=self.secondary_color)
         content.pack(fill="both", expand=True, padx=100, pady=30)
         
         # Form frame
@@ -285,7 +325,7 @@ class FlightBookingSystem:
         
         # Status label
         self.reg_status = tk.Label(form_frame, text="", font=("Arial", 10), 
-                                 bg="white", fg="red")
+                                 bg="white", fg=self.error_color)
         self.reg_status.grid(row=len(labels)+1, column=0, columnspan=2, pady=10)
         
         # Buttons
@@ -293,22 +333,22 @@ class FlightBookingSystem:
         btn_frame.grid(row=len(labels)+2, column=0, columnspan=2, pady=10)
         
         tk.Button(btn_frame, text="Register", font=("Arial", 11), 
-                bg="#1e3d6d", fg="white", width=12, command=self.register).pack(side="left", padx=10)
+                bg=self.primary_color, fg=self.light_text, width=12, command=self.register).pack(side="left", padx=10)
         tk.Button(btn_frame, text="Back", font=("Arial", 11), 
-                bg="#666", fg="white", width=12, command=self.create_main_frame).pack(side="left", padx=10)
+                bg="#666", fg=self.light_text, width=12, command=self.create_main_frame).pack(side="left", padx=10)
 
     def show_login(self):
         """Show login form"""
         self.clear_frame()
         
         # Header
-        header = tk.Frame(self.root, bg="#1e3d6d", height=80)
+        header = tk.Frame(self.root, bg=self.primary_color, height=80)
         header.pack(fill="x")
         tk.Label(header, text="User Login", font=("Arial", 20, "bold"), 
-               fg="white", bg="#1e3d6d").pack(pady=20)
+               fg=self.light_text, bg=self.primary_color).pack(pady=20)
         
         # Content
-        content = tk.Frame(self.root, bg="#f0f8ff")
+        content = tk.Frame(self.root, bg=self.secondary_color)
         content.pack(fill="both", expand=True, padx=150, pady=30)
         
         # Login frame
@@ -341,11 +381,11 @@ class FlightBookingSystem:
         
         # Forgot password
         tk.Button(remember_frame, text="Forgot Password?", font=("Arial", 9), 
-                 bg="white", fg="#1e3d6d", bd=0, command=self.show_password_reset).pack(side="right")
+                 bg="white", fg=self.primary_color, bd=0, command=self.show_password_reset).pack(side="right")
         
         # Status label
         self.login_status = tk.Label(login_frame, text="", font=("Arial", 10), 
-                                   bg="white", fg="red")
+                                   bg="white", fg=self.error_color)
         self.login_status.pack(pady=10)
         
         # Buttons
@@ -353,22 +393,22 @@ class FlightBookingSystem:
         btn_frame.pack(pady=20)
         
         tk.Button(btn_frame, text="Login", font=("Arial", 11), 
-                bg="#1e3d6d", fg="white", width=12, command=self.login).pack(side="left", padx=10)
+                bg=self.primary_color, fg=self.light_text, width=12, command=self.login).pack(side="left", padx=10)
         tk.Button(btn_frame, text="Back", font=("Arial", 11), 
-                bg="#666", fg="white", width=12, command=self.create_main_frame).pack(side="left", padx=10)
+                bg="#666", fg=self.light_text, width=12, command=self.create_main_frame).pack(side="left", padx=10)
 
     def show_booking_form(self):
         """Show flight booking form"""
         self.clear_frame()
         
         # Header
-        header = tk.Frame(self.root, bg="#1e3d6d", height=80)
+        header = tk.Frame(self.root, bg=self.primary_color, height=80)
         header.pack(fill="x")
         tk.Label(header, text="Book a Flight", font=("Arial", 20, "bold"), 
-               fg="white", bg="#1e3d6d").pack(pady=20)
+               fg=self.light_text, bg=self.primary_color).pack(pady=20)
         
         # Content
-        content = tk.Frame(self.root, bg="#f0f8ff")
+        content = tk.Frame(self.root, bg=self.secondary_color)
         content.pack(fill="both", expand=True, padx=40, pady=20)
         
         # Form frame
@@ -424,7 +464,7 @@ class FlightBookingSystem:
         
         # Status label
         self.booking_status = tk.Label(form_frame, text="", font=("Arial", 10), 
-                                    bg="white", fg="red")
+                                    bg="white", fg=self.error_color)
         self.booking_status.grid(row=len(labels)+1, column=0, columnspan=2, pady=10)
         
         # Buttons
@@ -432,22 +472,22 @@ class FlightBookingSystem:
         btn_frame.grid(row=len(labels)+2, column=0, columnspan=2, pady=10)
         
         tk.Button(btn_frame, text="Search Flights", font=("Arial", 11), 
-                bg="#1e3d6d", fg="white", width=15, command=self.search_flights).pack(side="left", padx=10)
+                bg=self.primary_color, fg=self.light_text, width=15, command=self.search_flights).pack(side="left", padx=10)
         tk.Button(btn_frame, text="Cancel", font=("Arial", 11), 
-                bg="#666", fg="white", width=15, command=self.create_main_frame).pack(side="left", padx=10)
+                bg="#666", fg=self.light_text, width=15, command=self.create_main_frame).pack(side="left", padx=10)
 
     def show_my_bookings(self):
         """Show user's bookings"""
         self.clear_frame()
         
         # Header
-        header = tk.Frame(self.root, bg="#1e3d6d", height=80)
+        header = tk.Frame(self.root, bg=self.primary_color, height=80)
         header.pack(fill="x")
         tk.Label(header, text=f"{self.current_user}'s Bookings", font=("Arial", 20, "bold"), 
-               fg="white", bg="#1e3d6d").pack(pady=20)
+               fg=self.light_text, bg=self.primary_color).pack(pady=20)
         
         # Content
-        content = tk.Frame(self.root, bg="#f0f8ff")
+        content = tk.Frame(self.root, bg=self.secondary_color)
         content.pack(fill="both", expand=True, padx=40, pady=20)
         
         # Bookings frame
@@ -505,15 +545,15 @@ class FlightBookingSystem:
                 btn_frame.grid(row=len(details), column=0, columnspan=2, pady=20)
                 
                 tk.Button(btn_frame, text="Cancel Booking", font=("Arial", 10), 
-                         bg="#d9534f", fg="white", width=15).pack(side="left", padx=10)
+                         bg=self.error_color, fg=self.light_text, width=15).pack(side="left", padx=10)
                 tk.Button(btn_frame, text="Change Flight", font=("Arial", 10), 
-                         bg="#5bc0de", fg="white", width=15).pack(side="left", padx=10)
+                         bg=self.accent_color, fg=self.light_text, width=15).pack(side="left", padx=10)
                 tk.Button(btn_frame, text="Print Ticket", font=("Arial", 10), 
-                         bg="#5cb85c", fg="white", width=15).pack(side="left", padx=10)
+                         bg=self.success_color, fg=self.light_text, width=15).pack(side="left", padx=10)
         
         # Back button
         tk.Button(content, text="Back to Main Menu", font=("Arial", 11), 
-                 bg="#1e3d6d", fg="white", command=self.create_main_frame).pack(pady=20)
+                 bg=self.primary_color, fg=self.light_text, command=self.create_main_frame).pack(pady=20)
 
     def register(self):
         """Register a new user"""
